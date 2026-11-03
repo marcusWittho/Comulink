@@ -1,4 +1,4 @@
-# Shortener
+# Comulink
 
 API de encurtamento de URLs construída com Spring Boot 4.1.1, Spring Web MVC e Spring Data MongoDB.
 
