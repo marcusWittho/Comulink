@@ -2,4 +2,4 @@ spring:
   application:
     name: shortener
   mongodb:
-    uri: mongodb://localhost:27017/shortener
+    uri: mongodb://admin:admin@localhost:27017/shortener?authSource=admin
