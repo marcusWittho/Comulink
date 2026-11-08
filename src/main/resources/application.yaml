@@ -1,10 +1,6 @@
 spring:
   application:
     name: shortener
-  datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
   jpa:
     open-in-view: false
     hibernate:

@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL_DEV:jdbc:postgresql://localhost:5432/shortener}
+    username: ${DATABASE_USERNAME_DEV:postgres}
+    password: ${DATABASE_PASSWORD_DEV:postgres}
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    com.wittho.shortener: DEBUG
