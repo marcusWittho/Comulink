@@ -7,3 +7,9 @@ spring:
       ddl-auto: validate
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+shortener:
+  rate-limit:
+    create-url:
+      capacity: 10
+      refill-period: 1m
