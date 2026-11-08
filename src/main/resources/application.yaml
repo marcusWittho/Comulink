@@ -1,5 +1,13 @@
 spring:
   application:
     name: shortener
-  mongodb:
-    uri: mongodb://admin:admin@localhost:27017/shortener?authSource=admin
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
