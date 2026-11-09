@@ -1,5 +1,15 @@
 spring:
   application:
     name: shortener
-  mongodb:
-    uri: mongodb://admin:admin@localhost:27017/shortener?authSource=admin
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+shortener:
+  rate-limit:
+    create-url:
+      capacity: 10
+      refill-period: 1m

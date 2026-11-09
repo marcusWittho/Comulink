@@ -2,7 +2,7 @@ package com.wittho.shortener.api.controller;
 
 import java.net.URI;
 
-import com.wittho.shortener.domain.repository.UrlRepository;
+import com.wittho.shortener.domain.service.UrlService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RedirectController {
 
-	private final UrlRepository urlRepository;
+	private final UrlService urlService;
 
-	public RedirectController(UrlRepository urlRepository) {
-		this.urlRepository = urlRepository;
+	public RedirectController(UrlService urlService) {
+		this.urlService = urlService;
 	}
 
 	@GetMapping("/{shortCode}")
 	public ResponseEntity<Void> redirect(@PathVariable String shortCode) {
-		return urlRepository.findByShortCode(shortCode)
+		return urlService.findByShortCode(shortCode)
 				.map(url -> ResponseEntity.status(HttpStatus.FOUND)
 						.location(URI.create(url.getOriginalUrl()))
 						.<Void>build())
