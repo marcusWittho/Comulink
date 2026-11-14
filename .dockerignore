@@ -1,0 +1,19 @@
+# Não enviar ao contexto do build: artefatos locais, IDE, Git e arquivos com segredos.
+.git
+.gitignore
+.gradle
+.idea
+build
+out
+bin
+*.iml
+.vscode
+.env
+.env.*
+HELP.md
+README.md
+PRODUCAO.md
+CLAUDE.md
+docker-compose*.yml
+Dockerfile
+.dockerignore
