@@ -144,6 +144,16 @@ GET /{shortCode}
 
 Retorna `302 Found` com o cabeçalho `Location` apontando para a URL original, ou `404 Not Found` se o código não existir.
 
+### Saúde da aplicação
+
+```http
+GET /actuator/health
+GET /actuator/health/liveness
+GET /actuator/health/readiness
+```
+
+Retornam `200 OK` com `{"status":"UP"}` quando a aplicação está saudável. Os detalhes dos componentes não são expostos. Os demais endpoints do Actuator não estão disponíveis (`404`).
+
 ## Estrutura do projeto
 
 ```
