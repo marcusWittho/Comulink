@@ -11,9 +11,11 @@ Ela recebe uma URL longa, gera um código curto aleatório de 7 caracteres e, ao
 - PostgreSQL 17
 - Liquibase (migrações do banco)
 - Bucket4j + Caffeine (rate limit por IP na criação de links)
+- Spring Boot Actuator (health check)
 - Lombok
 - Testcontainers (PostgreSQL 17 nos testes de integração)
 - Gradle (wrapper incluído)
+- Docker (imagem multi-stage com JRE 25 e usuário não-root)
 
 ## Pré-requisitos
 
@@ -66,13 +68,18 @@ O limite de criação de links pode ser ajustado em `application.yaml`:
 docker build -t shortener .
 
 docker run --rm -p 8080:8080 \
+  --add-host=host.docker.internal:host-gateway \
   -e DATABASE_URL='jdbc:postgresql://host.docker.internal:5433/shortener' \
   -e DATABASE_USERNAME='shortener' \
   -e DATABASE_PASSWORD='shortener' \
   shortener
 ```
 
-A imagem roda com usuário não-root. Para ajustar a memória da JVM, sobrescreva `JAVA_OPTS` (padrão: `-XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError`). No Linux, `host.docker.internal` pode não existir; use o IP da máquina ou uma rede Docker compartilhada com o PostgreSQL.
+- O Dockerfile já define `SPRING_PROFILES_ACTIVE=prod`, então não é preciso informar o perfil.
+- A imagem roda com usuário não-root (`shortener`).
+- O `--add-host` é necessário no Linux, onde `host.docker.internal` não existe por padrão. Em vez dele, use o IP da máquina ou uma rede Docker compartilhada com o PostgreSQL.
+- Para ajustar a memória da JVM, sobrescreva `JAVA_OPTS` (padrão: `-XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError`).
+- O `HEALTHCHECK` da imagem consulta `/actuator/health/liveness` a cada 30 segundos. Veja o status com `docker inspect --format '{{.State.Health.Status}}' <container>`.
 
 ## Testes
 
@@ -154,9 +161,14 @@ GET /actuator/health/readiness
 
 Retornam `200 OK` com `{"status":"UP"}` quando a aplicação está saudável. Os detalhes dos componentes não são expostos. Os demais endpoints do Actuator não estão disponíveis (`404`).
 
+O `HEALTHCHECK` do Docker usa o endpoint de liveness, que não depende do banco. Assim, uma queda do PostgreSQL não marca o container como `unhealthy`.
+
 ## Estrutura do projeto
 
 ```
+Dockerfile                             # Imagem multi-stage (build com JDK 25, runtime com JRE 25)
+.dockerignore                          # Arquivos fora do contexto do build
+
 src/main/java/com/wittho/shortener/
 ├── ShortenerApplication.java
 ├── api/
@@ -179,7 +191,7 @@ src/main/resources/db/changelog/
 └── changes/001-create-urls-table.sql
 
 src/test/java/com/wittho/shortener/
-├── api/                              # Testes de integração da API (MockMvc + PostgreSQL)
+├── api/                              # Testes da API (MockMvc, PostgreSQL e Actuator)
 ├── domain/                           # Testes de serviço, validação e repositório
 └── support/PostgresTestcontainerConfig.java
 ```
