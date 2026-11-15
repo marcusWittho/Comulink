@@ -9,3 +9,6 @@ spring:
 logging:
   level:
     root: INFO
+  structured:
+    format:
+      console: ecs

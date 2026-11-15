@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Segredos de deploy (nunca versionar) ###
+.env
+deploy/.env
