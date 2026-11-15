@@ -12,12 +12,21 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        # prometheus: métricas para scrape (taxa de 5xx, latência, pool do banco). Bloquear /actuator/* no proxy externo.
+        include: health,prometheus
   endpoint:
     health:
       show-details: never
       probes:
         enabled: true
+      group:
+        # /actuator/health/database: UP/DOWN do banco, sem detalhes (show-details: never)
+        database:
+          include: db
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
 
 shortener:
   rate-limit:
