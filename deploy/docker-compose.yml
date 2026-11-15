@@ -1,0 +1,39 @@
+# Produção no VPS (Hostinger KVM). Copie esta pasta para /opt/shortener e crie o .env a partir do .env.example.
+# Uso: docker compose pull && docker compose up -d
+services:
+  app:
+    image: ${IMAGE_REPO}:${IMAGE_TAG}   # tag fixa de versão, nunca "latest"
+    env_file: .env
+    restart: unless-stopped
+    expose:
+      - "8080"                          # só rede interna: NÃO publicar com "ports" (o Docker ignora o ufw)
+    networks: [web]
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data                # certificados Let's Encrypt (não perder)
+      - caddy_config:/config
+    networks: [web]
+    depends_on:
+      app:
+        condition: service_healthy      # HEALTHCHECK da imagem (liveness)
+
+networks:
+  web: {}
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}
